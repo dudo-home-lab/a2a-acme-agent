@@ -22,8 +22,8 @@ RUN npm ci --silent
 # Build the TypeScript application
 RUN npm run build
 
-# Continue with the official LTS Node image to create a production image.
-FROM node:24
+# Continue with the official LTS slim Node image to create a production image.
+FROM node:24-slim
 
 WORKDIR /usr/src/app
 

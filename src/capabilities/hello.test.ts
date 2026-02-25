@@ -1,23 +1,30 @@
-import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import { describe, it } from 'node:test';
+import type { Message, TaskStatusUpdateEvent } from '@a2a-js/sdk';
+import type { ExecutionEventBus } from '@a2a-js/sdk/server';
 import { v4 as uuidv4 } from 'uuid';
 import { HelloExecutor } from './hello.js';
-import type { Message } from '@a2a-js/sdk';
-import type { ExecutionEventBus } from '@a2a-js/sdk/server';
 
 describe('HelloExecutor', () => {
-  it('should publish a hello message', async () => {
+  it('should publish a working status update then a hello message', async () => {
     const executor = new HelloExecutor();
     const publishedEvents: unknown[] = [];
 
-    const mockEventBus: ExecutionEventBus = {
+    const mockEventBus = {
       publish: (event: unknown) => publishedEvents.push(event),
       finished: () => {},
-    };
+      on: () => mockEventBus,
+      off: () => mockEventBus,
+      once: () => mockEventBus,
+      removeAllListeners: () => mockEventBus,
+    } as unknown as ExecutionEventBus;
+
+    const taskId = uuidv4();
+    const contextId = uuidv4();
 
     const mockContext = {
-      taskId: uuidv4(),
-      contextId: uuidv4(),
+      taskId,
+      contextId,
       userMessage: {
         kind: 'message' as const,
         messageId: uuidv4(),
@@ -29,8 +36,18 @@ describe('HelloExecutor', () => {
 
     await executor.execute(mockContext, mockEventBus);
 
-    assert.strictEqual(publishedEvents.length, 1);
-    const message = publishedEvents[0] as Message;
+    assert.strictEqual(publishedEvents.length, 2);
+
+    // First event: working status update
+    const statusUpdate = publishedEvents[0] as TaskStatusUpdateEvent;
+    assert.strictEqual(statusUpdate.kind, 'status-update');
+    assert.strictEqual(statusUpdate.status.state, 'working');
+    assert.strictEqual(statusUpdate.final, false);
+    assert.strictEqual(statusUpdate.taskId, taskId);
+    assert.strictEqual(statusUpdate.contextId, contextId);
+
+    // Second event: final message
+    const message = publishedEvents[1] as Message;
     assert.strictEqual(message.kind, 'message');
     assert.strictEqual(message.role, 'agent');
     assert.ok(message.parts[0].kind === 'text');
