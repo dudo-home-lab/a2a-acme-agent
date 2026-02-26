@@ -1,7 +1,19 @@
-import type { Message, TaskStatusUpdateEvent, TextPart } from '@a2a-js/sdk';
+import type { Message, TaskStatusUpdateEvent, TextPart, AgentSkill } from '@a2a-js/sdk';
 import type { AgentExecutor, ExecutionEventBus, RequestContext } from '@a2a-js/sdk/server';
 import { v4 as uuidv4 } from 'uuid';
 import type { Agent } from '../agent.js';
+
+/**
+ * Metadata for the capability
+ * This is the single source of truth for what this capability advertises
+ */
+export const chatSkill: AgentSkill = {
+  id: 'chat',
+  name: 'Chat',
+  description: 'AI-powered conversational responses for any query or topic',
+  tags: ['chat', 'assistant', 'general'],
+  examples: ['Hello', 'Tell me about ACME', 'What can you help me with?', 'How does this work?'],
+};
 
 /**
  * AI-Powered Agent Executor

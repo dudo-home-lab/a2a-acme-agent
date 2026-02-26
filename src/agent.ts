@@ -40,9 +40,7 @@ Available tools:
         getCompanyInfo: tool({
           description: 'Get information about ACME company, products, or services',
           inputSchema: z.object({
-            topic: z
-              .string()
-              .describe('The topic to get information about (e.g., company, products, services)'),
+            topic: z.string().describe('The topic to get information about (e.g., company, products, services)'),
           }),
           execute: async (input: { topic: string }) => {
             // Placeholder for actual company info lookup
@@ -94,9 +92,7 @@ Available tools:
    */
   async generateGreeting(name?: string): Promise<string> {
     try {
-      const prompt = name
-        ? `Generate a warm greeting for ${name}`
-        : 'Generate a warm greeting for a new user';
+      const prompt = name ? `Generate a warm greeting for ${name}` : 'Generate a warm greeting for a new user';
 
       const result = await generateText({
         model: this.model,
