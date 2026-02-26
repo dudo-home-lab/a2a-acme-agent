@@ -1,11 +1,13 @@
 import { anthropic } from '@ai-sdk/anthropic';
-import { generateText } from 'ai';
+import { generateText, ToolLoopAgent, tool } from 'ai';
+import { z } from 'zod';
 
 /**
  * Autonomous AI agent for ACME A2A agent
- * Uses Vercel AI SDK to generate intelligent responses
+ * Uses Vercel AI SDK ToolLoopAgent for proper agentic interactions
  */
 export class Agent {
+  private toolLoopAgent;
   private model: ReturnType<typeof anthropic>;
 
   constructor() {
@@ -19,24 +21,63 @@ export class Agent {
 
     // Initialize Anthropic model
     this.model = anthropic(process.env.ANTHROPIC_MODEL);
+
+    // Initialize ToolLoopAgent with ACME-specific capabilities
+    this.toolLoopAgent = new ToolLoopAgent({
+      model: this.model,
+      instructions: `You are a helpful ACME agent. You provide friendly, professional assistance to users.
+
+Your role is to:
+1. Understand user requests and respond helpfully
+2. Use available tools when needed to provide better assistance
+3. Keep responses concise and conversational (2-3 sentences)
+4. Be professional but personable
+
+Available tools:
+- getCompanyInfo: Get information about ACME company
+- generateCustomGreeting: Create personalized greetings for users`,
+      tools: {
+        getCompanyInfo: tool({
+          description: 'Get information about ACME company, products, or services',
+          inputSchema: z.object({
+            topic: z
+              .string()
+              .describe('The topic to get information about (e.g., company, products, services)'),
+          }),
+          execute: async (input: { topic: string }) => {
+            // Placeholder for actual company info lookup
+            return {
+              topic: input.topic,
+              info: 'ACME is a leading technology company specializing in AI-powered solutions and agent-to-agent communication systems.',
+            };
+          },
+        }),
+        generateCustomGreeting: tool({
+          description: 'Generate a personalized greeting for a user',
+          inputSchema: z.object({
+            name: z.string().optional().describe('The name of the user to greet'),
+          }),
+          execute: async (input: { name?: string }) => {
+            if (input.name) {
+              return { greeting: `Hello ${input.name}! Welcome to ACME. How can I help you today?` };
+            }
+            return { greeting: 'Hello! Welcome to ACME. How can I assist you?' };
+          },
+        }),
+      },
+    });
   }
 
   /**
-   * Process a user message and generate a response
+   * Process a user message using ToolLoopAgent
    * @param text The user's message text
    * @returns The agent's response
    */
   async processMessage(text: string): Promise<string> {
     try {
-      const result = await generateText({
-        model: this.model,
-        prompt: `You are a helpful ACME agent. Respond to the user's message in a friendly and professional way.
-
-User message: ${text}
-
-Generate a helpful response. Keep it concise (2-3 sentences).`,
+      const result = await this.toolLoopAgent.generate({
+        prompt: text,
       });
-
       return result.text;
     } catch (error) {
       console.error('Error processing message:', error);
@@ -52,8 +93,8 @@ Generate a helpful response. Keep it concise (2-3 sentences).`,
   async generateGreeting(name?: string): Promise<string> {
     try {
       const prompt = name
-        ? `Generate a warm, friendly greeting for someone named "${name}". Keep it to 1-2 sentences. Be professional but personable.`
-        : 'Generate a warm, friendly greeting. Keep it to 1-2 sentences. Be professional but personable.';
+        ? `Generate a warm greeting for ${name}`
+        : 'Generate a warm greeting for a new user';
 
       const result = await generateText({
         model: this.model,
