@@ -39,7 +39,7 @@ export class HelloExecutor implements AgentExecutor {
       const startTime = Date.now();
       const responseText = await this.agent.processMessage(userText);
       const duration = Date.now() - startTime;
-      
+
       console.log(`✅ [Task ${taskId.substring(0, 8)}] Response generated in ${duration}ms`);
       console.log(`   Response: "${responseText.substring(0, 100)}${responseText.length > 100 ? '...' : ''}"}`);
 
