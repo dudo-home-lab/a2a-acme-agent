@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import type { AgentCard } from '@a2a-js/sdk';
 import type { Request } from 'express';
-import { chatSkill } from './capabilities/hello.js';
+import { chatSkill } from './capabilities/consultation.js';
 
 /** Read package.json for agent metadata */
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));

@@ -4,17 +4,17 @@ import type { Message, TaskStatusUpdateEvent } from '@a2a-js/sdk';
 import type { ExecutionEventBus } from '@a2a-js/sdk/server';
 import { v4 as uuidv4 } from 'uuid';
 import type { Agent } from '../agent.js';
-import { HelloExecutor } from './hello.js';
+import { ConsultationExecutor } from './consultation.js';
 
-describe('HelloExecutor', () => {
-  it('should publish a working status update then a hello message', async () => {
+describe('ConsultationExecutor', () => {
+  it('should publish a working status update then a response message', async () => {
     // Create a mock Agent
     const mockAgent = {
       processMessage: async (text: string) => `Mock response to: ${text}`,
       generateGreeting: async (name?: string) => `Hello ${name || 'World'}!`,
     } as Agent;
 
-    const executor = new HelloExecutor(mockAgent);
+    const executor = new ConsultationExecutor(mockAgent);
     const publishedEvents: unknown[] = [];
 
     const mockEventBus = {

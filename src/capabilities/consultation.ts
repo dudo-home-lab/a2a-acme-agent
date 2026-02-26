@@ -4,22 +4,28 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Agent } from '../agent.js';
 
 /**
- * Metadata for the capability
+ * Skill metadata for the goat farming consultation capability
  * This is the single source of truth for what this capability advertises
  */
 export const chatSkill: AgentSkill = {
-  id: 'chat',
-  name: 'Chat',
-  description: 'AI-powered conversational responses for any query or topic',
-  tags: ['chat', 'assistant', 'general'],
-  examples: ['Hello', 'Tell me about ACME', 'What can you help me with?', 'How does this work?'],
+  id: 'goat-farming-consultation',
+  name: 'Goat Farming Consultation',
+  description: 'Expert advice on goat farming: breeds, health, feeding, breeding, dairy production, and farm management',
+  tags: ['goats', 'farming', 'agriculture', 'livestock', 'dairy', 'expert'],
+  examples: [
+    'What breed of goat is best for dairy production?',
+    'How much space do I need for 5 goats?',
+    'What should I feed my pregnant doe?',
+    'How do I prevent parasites in goats?',
+  ],
 };
 
 /**
- * AI-Powered Agent Executor
- * Implements the AgentExecutor interface from the A2A SDK using Vercel AI SDK
+ * Consultation Executor
+ * Implements the AgentExecutor interface for providing expert consultation
+ * Domain expertise (goat farming) is configured via the Agent
  */
-export class HelloExecutor implements AgentExecutor {
+export class ConsultationExecutor implements AgentExecutor {
   constructor(private agent: Agent) {}
 
   async execute(requestContext: RequestContext, eventBus: ExecutionEventBus): Promise<void> {
@@ -31,7 +37,7 @@ export class HelloExecutor implements AgentExecutor {
       .map((part) => part.text)
       .join(' ');
 
-    console.log(`\n🔵 [Task ${taskId.substring(0, 8)}] Executing skill 'chat'`);
+    console.log(`\n🔵 [Task ${taskId.substring(0, 8)}] Executing skill 'goat-farming-consultation'`);
     console.log(`   Context: ${contextId || 'none'}`);
     console.log(`   Message: "${userText.substring(0, 100)}${userText.length > 100 ? '...' : ''}"}`);
 

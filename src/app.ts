@@ -4,7 +4,7 @@ import { jsonRpcHandler, restHandler, UserBuilder } from '@a2a-js/sdk/server/exp
 import type { Express } from 'express';
 import express from 'express';
 import { createAgent } from './agent.js';
-import { HelloExecutor } from './capabilities/hello.js';
+import { ConsultationExecutor } from './capabilities/consultation.js';
 import { generateAgentCard } from './card.js';
 
 /** Configure logging level from environment */
@@ -13,7 +13,7 @@ console.log(`A2A Agent initialized with log level: ${logLevel}`);
 
 /** Create the AI agent and executor */
 const agent = createAgent();
-const agentExecutor = new HelloExecutor(agent);
+const agentExecutor = new ConsultationExecutor(agent);
 const requestHandler = new DefaultRequestHandler(generateAgentCard(), new InMemoryTaskStore(), agentExecutor);
 
 /** Setup Express app */

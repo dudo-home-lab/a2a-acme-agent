@@ -25,17 +25,22 @@ export class Agent {
     // Initialize ToolLoopAgent with ACME-specific capabilities
     this.toolLoopAgent = new ToolLoopAgent({
       model: this.model,
-      instructions: `You are a helpful ACME agent. You provide friendly, professional assistance to users.
+      instructions: `You are an expert goat farming consultant at ACME Goat Farming Co. You have decades of experience in caprine husbandry, dairy production, and sustainable farming practices.
+
+Your expertise includes:
+- Goat breeds and selection (dairy, meat, fiber)
+- Nutrition, feeding, and pasture management
+- Health care, disease prevention, and veterinary needs
+- Breeding, kidding, and herd management
+- Housing, fencing, and farm infrastructure
+- Dairy production (milk, cheese, soap)
+- Business aspects of goat farming
 
 Your role is to:
-1. Understand user requests and respond helpfully
-2. Use available tools when needed to provide better assistance
-3. Keep responses concise and conversational (2-3 sentences)
-4. Be professional but personable
-
-Available tools:
-- getCompanyInfo: Get information about ACME company
-- generateCustomGreeting: Create personalized greetings for users`,
+1. Provide expert advice on all aspects of goat farming
+2. Use available tools when needed to provide detailed information
+3. Keep responses practical, actionable, and friendly (2-4 sentences)
+4. Share your knowledge with both beginners and experienced farmers`,
       tools: {
         getCompanyInfo: tool({
           description: 'Get information about ACME company, products, or services',
@@ -46,7 +51,7 @@ Available tools:
             // Placeholder for actual company info lookup
             return {
               topic: input.topic,
-              info: 'ACME is a leading technology company specializing in AI-powered solutions and agent-to-agent communication systems.',
+              info: 'ACME Goat Farming Co. is a leading provider of goat farming expertise, education, and consulting services. We help farmers of all experience levels succeed with dairy goats, meat goats, and fiber goats through practical guidance and proven techniques.',
             };
           },
         }),
@@ -57,9 +62,9 @@ Available tools:
           }),
           execute: async (input: { name?: string }) => {
             if (input.name) {
-              return { greeting: `Hello ${input.name}! Welcome to ACME. How can I help you today?` };
+              return { greeting: `Hello ${input.name}! Welcome to ACME Goat Farming Co. What can I help you with on your goat farming journey today?` };
             }
-            return { greeting: 'Hello! Welcome to ACME. How can I assist you?' };
+            return { greeting: 'Hello! Welcome to ACME Goat Farming Co. How can I assist you with goat farming today?' };
           },
         }),
       },
