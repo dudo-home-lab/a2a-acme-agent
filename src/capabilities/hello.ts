@@ -1,12 +1,15 @@
 import type { Message, TaskStatusUpdateEvent, TextPart } from '@a2a-js/sdk';
 import type { AgentExecutor, ExecutionEventBus, RequestContext } from '@a2a-js/sdk/server';
 import { v4 as uuidv4 } from 'uuid';
+import type { Agent } from '../agent.js';
 
 /**
- * Hello Agent Executor
- * Implements the AgentExecutor interface from the A2A SDK
+ * AI-Powered Agent Executor
+ * Implements the AgentExecutor interface from the A2A SDK using Vercel AI SDK
  */
 export class HelloExecutor implements AgentExecutor {
+  constructor(private agent: Agent) {}
+
   async execute(requestContext: RequestContext, eventBus: ExecutionEventBus): Promise<void> {
     const { userMessage, contextId, taskId } = requestContext;
 
@@ -28,8 +31,8 @@ export class HelloExecutor implements AgentExecutor {
         .map((part) => part.text)
         .join(' ');
 
-      // Extract optional name parameter (simple greeting logic)
-      const name = userText.replace(/hello|hi|hey/gi, '').trim() || 'World';
+      // Use AI agent to generate intelligent response
+      const responseText = await this.agent.processMessage(userText);
 
       // Create a response message
       const responseMessage: Message = {
@@ -39,7 +42,7 @@ export class HelloExecutor implements AgentExecutor {
         parts: [
           {
             kind: 'text',
-            text: `Hello, ${name}! This is an A2A agent. The time is ${new Date().toISOString()}.`,
+            text: responseText,
           },
         ],
         contextId,

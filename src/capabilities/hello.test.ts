@@ -3,11 +3,18 @@ import { describe, it } from 'node:test';
 import type { Message, TaskStatusUpdateEvent } from '@a2a-js/sdk';
 import type { ExecutionEventBus } from '@a2a-js/sdk/server';
 import { v4 as uuidv4 } from 'uuid';
+import type { Agent } from '../agent.js';
 import { HelloExecutor } from './hello.js';
 
 describe('HelloExecutor', () => {
   it('should publish a working status update then a hello message', async () => {
-    const executor = new HelloExecutor();
+    // Create a mock Agent
+    const mockAgent = {
+      processMessage: async (text: string) => `Mock response to: ${text}`,
+      generateGreeting: async (name?: string) => `Hello ${name || 'World'}!`,
+    } as Agent;
+
+    const executor = new HelloExecutor(mockAgent);
     const publishedEvents: unknown[] = [];
 
     const mockEventBus = {
@@ -51,6 +58,6 @@ describe('HelloExecutor', () => {
     assert.strictEqual(message.kind, 'message');
     assert.strictEqual(message.role, 'agent');
     assert.ok(message.parts[0].kind === 'text');
-    assert.ok((message.parts[0] as { text: string }).text.includes('Hello'));
+    assert.ok((message.parts[0] as { text: string }).text.includes('Mock response'));
   });
 });
