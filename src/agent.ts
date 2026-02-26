@@ -35,14 +35,7 @@ Your role is to:
 
 Available tools:
 - getCompanyInfo: Get information about ACME company
-- generateCustomGreeting: Create personalized greetings for users
-
-IMPORTANT - Formatting:
-Format responses for Slack using mrkdwn:
-- Use *bold* for emphasis (NOT ## headers)
-- Use _italic_ for secondary emphasis
-- Use bullet points with • or -
-- Keep formatting simple and readable`,
+- generateCustomGreeting: Create personalized greetings for users`,
       tools: {
         getCompanyInfo: tool({
           description: 'Get information about ACME company, products, or services',
