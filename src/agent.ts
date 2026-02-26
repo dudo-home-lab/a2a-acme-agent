@@ -35,7 +35,14 @@ Your role is to:
 
 Available tools:
 - getCompanyInfo: Get information about ACME company
-- generateCustomGreeting: Create personalized greetings for users`,
+- generateCustomGreeting: Create personalized greetings for users
+
+IMPORTANT - Formatting:
+Format responses for Slack using mrkdwn:
+- Use *bold* for emphasis (NOT ## headers)
+- Use _italic_ for secondary emphasis
+- Use bullet points with • or -
+- Keep formatting simple and readable`,
       tools: {
         getCompanyInfo: tool({
           description: 'Get information about ACME company, products, or services',
@@ -75,12 +82,14 @@ Available tools:
    */
   async processMessage(text: string): Promise<string> {
     try {
+      console.log('   🤖 AI Agent processing request...');
       const result = await this.toolLoopAgent.generate({
         prompt: text,
       });
+      console.log(`   🤖 AI Agent completed (${result.usage?.totalTokens || 0} tokens)`);
       return result.text;
     } catch (error) {
-      console.error('Error processing message:', error);
+      console.error('   ❌ AI Agent error:', error);
       throw error;
     }
   }
@@ -103,7 +112,7 @@ Available tools:
 
       return result.text;
     } catch (error) {
-      console.error('Error generating greeting:', error);
+      console.error('   ❌ Error generating greeting:', error);
       throw error;
     }
   }

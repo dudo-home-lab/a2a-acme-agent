@@ -66,9 +66,19 @@ const requestHandler = new DefaultRequestHandler(generateAgentCard(), new InMemo
 /** Setup Express app */
 const app: Express = express();
 
+// Request logging middleware
+app.use((req, res, next) => {
+  const caller = req.get('user-agent') || 'unknown';
+  const method = req.method;
+  const path = req.path;
+  console.log(`[${new Date().toISOString()}] ${method} ${path} from ${caller}`);
+  next();
+});
+
 // Dynamic AgentCard endpoint - generates URLs based on incoming request
 app.get(`/${AGENT_CARD_PATH}`, (req, res) => {
   const agentCard = generateAgentCard(req);
+  console.log(`📋 AgentCard requested from ${req.get('user-agent') || 'unknown'}`);
   res.json(agentCard);
 });
 

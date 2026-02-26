@@ -13,6 +13,16 @@ export class HelloExecutor implements AgentExecutor {
   async execute(requestContext: RequestContext, eventBus: ExecutionEventBus): Promise<void> {
     const { userMessage, contextId, taskId } = requestContext;
 
+    // Extract the user's message text for logging
+    const userText = userMessage.parts
+      .filter((part): part is TextPart => part.kind === 'text')
+      .map((part) => part.text)
+      .join(' ');
+
+    console.log(`\n🔵 [Task ${taskId.substring(0, 8)}] Executing skill 'chat'`);
+    console.log(`   Context: ${contextId || 'none'}`);
+    console.log(`   Message: "${userText.substring(0, 100)}${userText.length > 100 ? '...' : ''}"}`);
+
     // Signal to the client that the task is being processed.
     // referenceTasks (also in requestContext) carries prior turns for multi-turn contexts.
     const workingUpdate: TaskStatusUpdateEvent = {
@@ -25,14 +35,13 @@ export class HelloExecutor implements AgentExecutor {
     eventBus.publish(workingUpdate);
 
     try {
-      // Extract the user's message text
-      const userText = userMessage.parts
-        .filter((part): part is TextPart => part.kind === 'text')
-        .map((part) => part.text)
-        .join(' ');
-
       // Use AI agent to generate intelligent response
+      const startTime = Date.now();
       const responseText = await this.agent.processMessage(userText);
+      const duration = Date.now() - startTime;
+      
+      console.log(`✅ [Task ${taskId.substring(0, 8)}] Response generated in ${duration}ms`);
+      console.log(`   Response: "${responseText.substring(0, 100)}${responseText.length > 100 ? '...' : ''}"}`);
 
       // Create a response message
       const responseMessage: Message = {
@@ -51,6 +60,7 @@ export class HelloExecutor implements AgentExecutor {
       eventBus.publish(responseMessage);
       eventBus.finished();
     } catch (error) {
+      console.error(`❌ [Task ${taskId.substring(0, 8)}] Failed:`, error);
       const failedUpdate: TaskStatusUpdateEvent = {
         kind: 'status-update',
         taskId,
