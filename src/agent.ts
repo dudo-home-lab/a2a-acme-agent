@@ -1,5 +1,5 @@
 import { anthropic } from '@ai-sdk/anthropic';
-import { generateText, ToolLoopAgent, tool } from 'ai';
+import { generateText, stepCountIs, ToolLoopAgent, tool } from 'ai';
 import { z } from 'zod';
 
 /**
@@ -25,6 +25,7 @@ export class Agent {
     // Initialize ToolLoopAgent with ACME-specific capabilities
     this.toolLoopAgent = new ToolLoopAgent({
       model: this.model,
+      stopWhen: stepCountIs(5), // Limit to 5 steps to prevent runaway loops
       instructions: `You are an expert goat farming consultant at ACME Goat Farming Co. You have decades of experience in caprine husbandry, dairy production, and sustainable farming practices.
 
 Your expertise includes:
